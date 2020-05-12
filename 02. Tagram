@@ -1,0 +1,70 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Exam14October
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Dictionary<string, Dictionary<string, int>> userTagLike = new Dictionary<string, Dictionary<string, int>>();
+            Dictionary<string, int> tagsCount = new Dictionary<string, int>();
+
+
+            string input = "";
+            string name = "";
+            string tag = "";
+            int currentLikes = 0;
+
+
+
+            while ((input = Console.ReadLine()) != "end")
+            {
+                string[] tokens = input
+                .Split(" ", StringSplitOptions.RemoveEmptyEntries)
+                .ToArray();
+                if (tokens[0] == "ban")
+                {
+                    name = tokens[1];
+                    if (userTagLike.ContainsKey(name))
+                    {
+                        userTagLike.Remove(name);
+                    }
+                    continue;
+                }
+                else
+                {
+                    name = tokens[0];
+                    tag = tokens[2];
+                    currentLikes = int.Parse(tokens[4]);
+
+                }
+
+                if (!userTagLike.ContainsKey(name))
+                {
+                    userTagLike.Add(name, new Dictionary<string, int>());
+                    tagsCount.Add(name, 0);
+                }
+                if (!userTagLike[name].ContainsKey(tag))
+                {
+                    userTagLike[name].Add(tag, 0);
+                }
+                tagsCount[name] += 1;
+                userTagLike[name][tag] += currentLikes;
+
+            }
+
+            var ordered = userTagLike.OrderByDescending(x => x.Value.Values.Sum()).ThenBy(y => y.Value.Keys.Count);
+
+            foreach (var kvp in ordered)
+            {
+                Console.WriteLine(kvp.Key);
+                foreach (var tagLike in kvp.Value)
+                {
+                    Console.WriteLine($" - {tagLike.Key}: {tagLike.Value}");
+                }
+            }
+        }
+    }
+}
